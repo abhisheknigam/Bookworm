@@ -6,4 +6,7 @@ module.exports = function(app) {
     app.get('/getBestSellerByDate', home.getBestSellerByDate);
     app.get('/recommendMeAbook', home.recommendMeAbook);
     app.get('/getSummary', home.getSummary);
+    app.get('/getBookRecommendationByAuthor', home.getBookRecommendationByAuthor);
+    app.get('/getAllGenre', home.getAllGenre);
+    app.get('/getBookByGenre', home.getBookByGenre);
 }
