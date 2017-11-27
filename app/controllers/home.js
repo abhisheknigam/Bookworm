@@ -18,6 +18,8 @@ var bookAppend = ["I found % on this week's New York Times bestseller list ", "T
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
 
+var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
+var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships', }
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
     arr = [];
@@ -146,7 +148,7 @@ exports.getSummary = function(req, res) {
 
         console.log(sentence);
 
-        return res.status(200).json(information);
+        return res.status(200).json(sentence);
     } else {
         console.log('No book specified');
         return res.status(200).json('No book specified');
@@ -155,7 +157,6 @@ exports.getSummary = function(req, res) {
 
 exports.getAuthor = function(req, res) {
     if (author != null && author != '') {
-
 
         sentence = authorName[Math.floor(Math.random() * authorName.length)]
         sentence = sentence.replace("%", author)
@@ -194,18 +195,20 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                 books = [];
                 authors = [];
                 ratings = [];
-                for (var i = 0; i < works.length; i++) {
-                    books.push(works[i].best_book[0].title);
-                    authors.push(works[i].best_book[0].author[0].name);
-                    ratings.push(works[i].average_rating);
+                if (works != undefined) {
+                    for (var i = 0; i < works.length; i++) {
+                        books.push(works[i].best_book[0].title);
+                        authors.push(works[i].best_book[0].author[0].name);
+                        ratings.push(works[i].average_rating);
+                    }
+                    randomNumber = Math.floor(Math.random() * books.length);
+
+                    randomBook = books[randomNumber];
+                    randomBookAuthor = authors[randomNumber];
+                    randomRatings = ratings[randomNumber];
+
+                    randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
                 }
-                randomNumber = Math.floor(Math.random() * books.length);
-
-                randomBook = books[randomNumber];
-                randomBookAuthor = authors[randomNumber];
-                randomRatings = ratings[randomNumber];
-
-                randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
                 console.log(randomRecommendation);
             });
 
