@@ -13,8 +13,10 @@ var availableGenres = [];
 var author;
 var book;
 var bookid;
+var rating;
 
 //TODO
+var afterBookRecommend = ["% .Would you like me to read a summary"]
 var bookAppend = ["I found % on this week's New York Times bestseller list ", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
@@ -90,7 +92,6 @@ exports.getBestSellerByDate = function(req, res) {
                 console.log(JSON.stringify(arr));
                 information = arr;
             }
-            //console.log(innerInfo);
         } else {
             console.log(error)
         }
@@ -134,7 +135,6 @@ exports.recommendMeAbook = function(req, res) {
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
             }
-            //console.log(innerInfo);
         } else {
             console.log(error)
         }
@@ -151,9 +151,12 @@ exports.getSummary = function(req, res) {
 
         return res.status(200).json(sentence);
     } else if (book != null && book != '') {
-
         arr = [];
         url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+
+        if (author != null && author != '') {
+            url = url + '&author=' + author
+        }
 
         var options = {
             url: url + "&title=" + book,
@@ -163,17 +166,32 @@ exports.getSummary = function(req, res) {
             },
         };
 
-        if (!error && response.statusCode == 200) {
-            var parsedXML = "";
-            var randomRecommendation = "No book found";
-            parser.parseString(body, (err, result) => {
-                parsedXML = result;
-                bookid = parsedXML.GoodreadsResponse.book.id;
-                information = parsedXML.GoodreadsResponse.book.description
-                console.log(bookid);
-            });
+        httpsRequest(options, function callback(error, response, body) {
+            console.log(error);
+            console.log(response.statusCode);
+            if (response.statusCode == 200) {
+                var parsedXML = "";
+                var randomRecommendation = "No book found";
+                parser.parseString(body, (err, result) => {
+                    parsedXML = result;
+                    console.log(JSON.stringify(parsedXML));
+                    bookid = parsedXML.GoodreadsResponse.book[0].id[0];
+                    information = parsedXML.GoodreadsResponse.book[0].description[0];
 
-        }
+                    console.log(bookid);
+                    console.log(information);
+
+                    information = information.replace('//<![CDATA[', '');
+                    information = information.replace('//]]>', '');
+                    var rex = /(<([^>]+)>)/ig;
+                    information = information.replace(rex, "")
+
+                    console.log(bookid);
+                    console.log(information);
+                });
+            }
+            return res.status(200).json(information);
+        });
     } else {
         console.log('No book specified');
         return res.status(200).json('No book specified');
@@ -231,6 +249,10 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                     randomBook = books[randomNumber];
                     randomBookAuthor = authors[randomNumber];
                     randomRatings = ratings[randomNumber];
+
+                    book = randomBook;
+                    author = randomBookAuthor;
+                    rating = randomRatings;
 
                     randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
                 }
