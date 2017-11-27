@@ -11,10 +11,12 @@ var previousIntent;
 var state;
 var availableGenres = [];
 var author;
+var book;
 
 //TODO
 var bookAppend = ["I found % on this week's New York Times bestseller list ", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
-
+var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
+var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
 
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
@@ -137,7 +139,13 @@ exports.recommendMeAbook = function(req, res) {
 
 exports.getSummary = function(req, res) {
     if (information != null && information != '') {
-        console.log(information);
+
+
+        sentence = bookSummary[Math.floor(Math.random() * bookSummary.length)]
+        sentence = sentence.replace("%", information)
+
+        console.log(sentence);
+
         return res.status(200).json(information);
     } else {
         console.log('No book specified');
@@ -147,8 +155,13 @@ exports.getSummary = function(req, res) {
 
 exports.getAuthor = function(req, res) {
     if (author != null && author != '') {
-        console.log(author);
-        return res.status(200).json(author);
+
+
+        sentence = authorName[Math.floor(Math.random() * authorName.length)]
+        sentence = sentence.replace("%", author)
+
+        console.log(sentence);
+        return res.status(200).json(sentence);
     } else {
         console.log('No book specified');
         return res.status(200).json('No book specified');
