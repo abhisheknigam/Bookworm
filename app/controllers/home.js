@@ -4,7 +4,7 @@ const xml = require("xml-parse");
 const fs = require('fs');
 const parser = require('xml2js');
 var urll = require('url');
-
+var Enum = require('enum');
 
 var information;
 var previousIntent;
@@ -17,9 +17,12 @@ var rating;
 
 //TODO
 var afterBookRecommend = ["% .Would you like me to read a summary"]
-var bookAppend = ["I found % on this week's New York Times bestseller list ", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
+var moreInfo = ["I can give you more info about it like ratings, reviews or summary"];
+var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
+var states = new Enum(['START', 'BOOKFOUND', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
+var currentState = states.START;
 
 var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
 var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships', }
@@ -200,11 +203,11 @@ exports.getSummary = function(req, res) {
 
 exports.getAuthor = function(req, res) {
     if (author != null && author != '') {
-
         sentence = authorName[Math.floor(Math.random() * authorName.length)]
         sentence = sentence.replace("%", author)
 
         console.log(sentence);
+        currentState = states.BOOKFOUND;
         return res.status(200).json(sentence);
     } else {
         console.log('No book specified');
@@ -337,4 +340,24 @@ exports.getBookByGenre = function(req, res) {
             res.status(404);
         }
     });
+}
+
+exports.noInput = function(req, res) {
+    if (currentState == states.START) {
+        console.log('Changing state to BOOKNAMEUNKNOWN');
+        currentState = states.BOOKNAMEUNKNOWN;
+        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+    } else {
+        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+    }
+}
+
+exports.yesInput = function(req, res) {
+    if (currentState == states.START) {
+        console.log('Changing state to BOOKNAMEKNOWN');
+        currentState = states.BOOKNAMEKNOWN;
+        res.status(200).json('Which one?');
+    } else if (currentState == states.BOOKFOUND) {
+        res.status(200).json('Okay do you want to know');
+    }
 }
