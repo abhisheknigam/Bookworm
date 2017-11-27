@@ -9,4 +9,5 @@ module.exports = function(app) {
     app.get('/getBookRecommendationByAuthor', home.getBookRecommendationByAuthor);
     app.get('/getAllGenre', home.getAllGenre);
     app.get('/getBookByGenre', home.getBookByGenre);
+    app.get('/getAuthor', home.getAuthor);
 }
