@@ -170,19 +170,13 @@ exports.getSummary = function(req, res) {
         };
 
         httpsRequest(options, function callback(error, response, body) {
-            console.log(error);
-            console.log(response.statusCode);
             if (response.statusCode == 200) {
                 var parsedXML = "";
                 var randomRecommendation = "No book found";
                 parser.parseString(body, (err, result) => {
                     parsedXML = result;
-                    console.log(JSON.stringify(parsedXML));
                     bookid = parsedXML.GoodreadsResponse.book[0].id[0];
                     information = parsedXML.GoodreadsResponse.book[0].description[0];
-
-                    console.log(bookid);
-                    console.log(information);
 
                     information = information.replace('//<![CDATA[', '');
                     information = information.replace('//]]>', '');
@@ -256,6 +250,7 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                     book = randomBook;
                     author = randomBookAuthor;
                     rating = randomRatings;
+                    information = '';
 
                     randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
                 }
