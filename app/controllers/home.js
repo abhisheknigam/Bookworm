@@ -25,7 +25,7 @@ var states = new Enum(['START', 'BOOKFOUND', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']
 var currentState = states.START;
 
 var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
-var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships', }
+var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships'}
 
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
@@ -54,6 +54,7 @@ exports.getBestSeller = function(req, res) {
                     console.log(val);
                     arr.push(val);
                 }
+                currentState == states.BOOKFOUND;
                 res.status(200).json(arr);
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
@@ -258,6 +259,7 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                     rating = randomRatings;
 
                     randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
+                    currentState = states.BOOKFOUND;
                 }
                 console.log(randomRecommendation);
             });
@@ -342,22 +344,22 @@ exports.getBookByGenre = function(req, res) {
     });
 }
 
-exports.noInput = function(req, res) {
-    if (currentState == states.START) {
-        console.log('Changing state to BOOKNAMEUNKNOWN');
-        currentState = states.BOOKNAMEUNKNOWN;
-        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
-    } else {
-        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
-    }
+exports.noInput = function(req, res){
+  if(currentState == states.START){
+    console.log('Changing state to BOOKNAMEUNKNOWN');
+    currentState = states.BOOKNAMEUNKNOWN;
+    res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+  }else if(currentState == states.BOOKFOUND){
+    res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
+  }
 }
 
-exports.yesInput = function(req, res) {
-    if (currentState == states.START) {
-        console.log('Changing state to BOOKNAMEKNOWN');
-        currentState = states.BOOKNAMEKNOWN;
-        res.status(200).json('Which one?');
-    } else if (currentState == states.BOOKFOUND) {
-        res.status(200).json('Okay do you want to know');
-    }
+exports.yesInput = function(req, res){
+  if(currentState == states.START){
+    console.log('Changing state to BOOKNAMEKNOWN');
+    currentState = states.BOOKNAMEKNOWN;
+    res.status(200).json('Which one?');
+  }else if(currentState == states.BOOKFOUND){
+    res.status(200).json('Okay, I can help you with info like summary, ratings, reviews. what would you like to know?');
+  }
 }
