@@ -12,6 +12,7 @@ var state;
 var availableGenres = [];
 var author;
 var book;
+var bookid;
 
 //TODO
 var moreInfo = ["I can give you more info about it like ratings, reviews or summary"];
@@ -24,6 +25,7 @@ var currentState = states.START;
 
 var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
 var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships', }
+
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
     arr = [];
@@ -146,13 +148,36 @@ exports.recommendMeAbook = function(req, res) {
 exports.getSummary = function(req, res) {
     if (information != null && information != '') {
 
-
         sentence = bookSummary[Math.floor(Math.random() * bookSummary.length)]
         sentence = sentence.replace("%", information)
 
         console.log(sentence);
 
         return res.status(200).json(sentence);
+    } else if (book != null && book != '') {
+
+        arr = [];
+        url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+
+        var options = {
+            url: url + "&title=" + book,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        if (!error && response.statusCode == 200) {
+            var parsedXML = "";
+            var randomRecommendation = "No book found";
+            parser.parseString(body, (err, result) => {
+                parsedXML = result;
+                bookid = parsedXML.GoodreadsResponse.book.id;
+                information = parsedXML.GoodreadsResponse.book.description
+                console.log(bookid);
+            });
+
+        }
     } else {
         console.log('No book specified');
         return res.status(200).json('No book specified');
@@ -182,7 +207,7 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     console.log(JSON.stringify(query));
 
     var options = {
-        url: url + "&q=" + query.q,
+        url: url + "&q=" + query.name,
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
