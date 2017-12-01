@@ -12,4 +12,11 @@ module.exports = function(app) {
     app.get('/getAuthor', home.getAuthor);
     app.get('/yesInput', home.yesInput);
     app.get('/noInput', home.noInput);
+    app.get('/sessionEnd', home.sessionEnd);
+    app.get('/catchAll', home.catchAll);
+    app.get('/getBookRating', home.getBookRating);
+    app.get('/addToReadingList', home.addToReadingList);
+    app.get('/getReadingList', home.getReadingList);
+    app.get('/getAnotherBook', home.getAnotherBook);
+    app.get('/finished', home.finished);
 }

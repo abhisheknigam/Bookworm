@@ -27,6 +27,19 @@ var currentState = states.START;
 var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
 var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships'}
 
+var BookInfo = function (nm, aut, rating, genre, summ){
+  this.name = nm;
+  this.author = aut;
+  this.rating = rating;
+  this.genre = genre;
+  this.summay = summ;
+}
+
+var currentBook = new BookInfo("","","","","");
+
+// Reading list
+var readingList = [];
+
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
     arr = [];
@@ -197,17 +210,26 @@ exports.getSummary = function(req, res) {
 }
 
 exports.getAuthor = function(req, res) {
-    if (author != null && author != '') {
-        sentence = authorName[Math.floor(Math.random() * authorName.length)]
-        sentence = sentence.replace("%", author)
 
-        console.log(sentence);
-        currentState = states.BOOKFOUND;
-        return res.status(200).json(sentence);
-    } else {
-        console.log('No book specified');
-        return res.status(200).json('No book specified');
+    msg = '';
+    if (currentState == states.BOOKFOUND) {
+      msg = 'Book is written by ' + currentBook.author;
     }
+    else {
+      msg = 'Sorry! I don\'t have book name. Can you please tell me the book\'s name first';
+    }
+    return res.status(200).json(msg);
+    // if (author != null && author != '') {
+    //     sentence = authorName[Math.floor(Math.random() * authorName.length)]
+    //     sentence = sentence.replace("%", author)
+    //
+    //     console.log(sentence);
+    //     currentState = states.BOOKFOUND;
+    //     return res.status(200).json(sentence);
+    // } else {
+    //     console.log('No book specified');
+    //     return res.status(200).json('No book specified');
+    // }
 }
 
 exports.getBookRecommendationByAuthor = function(req, res) {
@@ -238,27 +260,30 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                 ratings = [];
                 if (works != undefined) {
                     for (var i = 0; i < works.length; i++) {
-                        books.push(works[i].best_book[0].title);
-                        authors.push(works[i].best_book[0].author[0].name);
-                        ratings.push(works[i].average_rating);
+                      books.push(works[i].best_book[0].title);
+                      authors.push(works[i].best_book[0].author[0].name);
+                      ratings.push(works[i].average_rating);
                     }
+                    console.log(books);
                     randomNumber = Math.floor(Math.random() * books.length);
 
-                    randomBook = books[randomNumber];
-                    randomBookAuthor = authors[randomNumber];
-                    randomRatings = ratings[randomNumber];
+                    currentBook.name = books[randomNumber];
+                    currentBook.author = authors[randomNumber];
+                    currentBook.rating = ratings[randomNumber];
 
-                    book = randomBook;
-                    author = randomBookAuthor;
-                    rating = randomRatings;
-                    information = '';
+                    // book = randomBook;
+                    // author = randomBookAuthor;
+                    // rating = randomRatings;
+                    // information = '';
 
-                    randomRecommendation = "I found the book " + randomBook + " by " + randomBookAuthor + ". It is rated " + randomRatings + " by readers ";
+                    randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + ".";
                     currentState = states.BOOKFOUND;
                 }
                 console.log(randomRecommendation);
             });
 
+            //Fill rating, summary information of the book
+            fillBookParams(currentBook.name);
             return res.status(200).json(randomRecommendation);
         } else {
             console.log(error)
@@ -339,22 +364,169 @@ exports.getBookByGenre = function(req, res) {
     });
 }
 
+exports.getAnotherBook = (req, res) => {
+  idx = books.indexOf(currentBook.name);
+  delete books[idx];
+  delete authors[idx];
+  delete ratings[idx];
+
+  if (books.length != 0) {
+    randomNumber = Math.floor(Math.random() * books.length);
+    console.log (books[randomNumber]);
+    currentBook.name = books[randomNumber];
+    currentBook.author = authors[randomNumber];
+    currentBook.rating = ratings[randomNumber];
+    fillBookParams(currentBook.name);
+    msg = 'How about ' + currentBook.name +'?';
+  }
+  res.status(200).json(msg);
+}
+
+exports.finished = (req, res) => {
+  // readingList.push(currentBook.name);
+  res.status(200).json('GoodBye. Have a nice day!');
+  setStart();
+}
+
+exports.getBookRating = function(req, res){
+  console.log('book rating intent');
+  msg = '';
+  if (currentState == states.BOOKFOUND) {
+    msg = 'The book ' + currentBook.name + 'is rated ' + currentBook.rating;
+  }
+  else {
+    msg = 'Sorry! I don\'t have book name. Could you please tell me the book\'s name?';
+  }
+  res.status(200).json(msg);
+}
+
+exports.sessionEnd = function(req, res){
+  console.log('Session end request');
+  setStart();
+  res.status(200).json('');
+}
+
+var setStart = () => {
+  console.log('setting the state to START state and removing all book information');
+  currentState = states.START;
+  currentBook.name = "";
+  currentBook.author = "";
+  currentBook.rating = "";
+  currentBook.genre = "";
+  currentBook.summary = "";
+  readingList = [];
+}
+
 exports.noInput = function(req, res){
-  if(currentState == states.START){
-    console.log('Changing state to BOOKNAMEUNKNOWN');
-    currentState = states.BOOKNAMEUNKNOWN;
-    res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
-  }else if(currentState == states.BOOKFOUND){
-    res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
+  if (currentState == states.START) {
+      console.log('Changing state to BOOKNAMEUNKNOWN');
+      currentState = states.BOOKNAMEUNKNOWN;
+      res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+  }
+  else if (currentState == states.BOOKFOUND) {
+      console.log ('BOOKFOUND STATE')
+      msg =   res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
   }
 }
 
 exports.yesInput = function(req, res){
-  if(currentState == states.START){
-    console.log('Changing state to BOOKNAMEKNOWN');
-    currentState = states.BOOKNAMEKNOWN;
-    res.status(200).json('Which one?');
-  }else if(currentState == states.BOOKFOUND){
-    res.status(200).json('Okay, I can help you with info like summary, ratings, reviews. what would you like to know?');
+  var url_parts = urll.parse(req.url, true);
+  var query = url_parts.query;
+  console.log(JSON.stringify(query));
+  var param = query.param;
+  switch (currentState) {
+    case states.START:
+      console.log('Changing state to BOOKNAMEKNOWN');
+      if (param === 'undefined') {
+        // if book's name is not provided set the state to BOOKNameKNOWN else set it to BOOKFOUND
+        currentState = states.BOOKNAMEKNOWN;
+        msg = 'which one?'
+      }
+      else {
+        currentBook.name = param;
+        currentState = states.BOOKFOUND;
+        fillBookParams(param);
+        console.log ('Books name specified by user ' +param);
+        msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+      }
+      break;
+    case states.BOOKFOUND:
+      msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+      break;
   }
+  res.status(200).json(msg);
+}
+
+// get all the information about the book.
+var fillBookParams = (bookName) => {
+  url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+  var options = {
+      url: url + "&title=" + bookName,
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+  };
+
+  httpsRequest(options, function callback(error, response, body) {
+      if (response.statusCode == 200) {
+          var parsedXML = "";
+          var randomRecommendation = "No book found";
+          parser.parseString(body, (err, result) => {
+              parsedXML = result;
+              bookid = parsedXML.GoodreadsResponse.book[0].id[0];
+              information = parsedXML.GoodreadsResponse.book[0].description[0];
+              currentBook.rating = parsedXML.GoodreadsResponse.book[0].average_rating[0];
+              currentBook.author = parsedXML.GoodreadsResponse.book[0].authors[0].author[0].name[0];
+              information = information.replace('//<![CDATA[', '');
+              information = information.replace('//]]>', '');
+              var rex = /(<([^>]+)>)/ig;
+              information = information.replace(rex, "")
+
+              console.log(bookid);
+              console.log(information);
+              currentBook.summary = information;
+          });
+      }
+//      return res.status(200).json(information);
+  });
+}
+
+exports.addToReadingList = (req, res) => {
+  readingList.push(currentBook.name);
+  console.log("Adding book " + currentBook.name + " to reading list");
+  res.status(200).json('Done. Do you want to search another book or are you finished?');
+}
+
+exports.getReadingList = (req, res) => {
+  if (readingList.length == 0) {
+    msg = 'Right now you have nothing in your reading list. Let\'s take you there.';
+  }
+  else {
+    msg = '';
+    for (i=0;i<readingList.length;i++) {
+      console.log(readingList[i]);
+      msg += readingList[i];
+      msg += ', ';
+    }
+    msg = 'you have ' + msg;
+  }
+  res.status(200).json(msg);
+}
+
+exports.catchAll = function(req, res){
+  var url_parts = urll.parse(req.url, true);
+  var query = url_parts.query;
+  console.log(JSON.stringify(query));
+  var istring = query.string;
+  var msg = '';
+  console.log('incoming string in catch all is ' + istring);
+  switch(currentState) {
+    case states.BOOKNAMEKNOWN:
+      currentBook.name = istring;
+      msg = 'Good choice. I can help you with information like rating, review, summary. What do you want to know?';
+      break;
+  }
+
+  res.status(200).json(msg);
 }
