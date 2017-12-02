@@ -38,7 +38,7 @@ var BookInfo = function(nm, aut, rating, genre, summ) {
     this.author = aut;
     this.rating = rating;
     this.genre = genre;
-    this.summay = summ;
+    this.summary = summ;
 }
 
 var currentBook = new BookInfo("", "", "", "", "");
@@ -473,18 +473,18 @@ var setStart = () => {
 }
 
 exports.noInput = function(req, res) {
+    var url_parts = urll.parse(req.url, true);
+    var query = url_parts.query;
+    console.log(JSON.stringify(query));
+    var param = query.param;
+    var param2 = query.param2;
+
+    console.log("param  is " + param);
+    console.log("param 2 is " + param2);
+
     if (currentState == states.START) {
         console.log('Changing state to BOOKNAMEUNKNOWN');
         currentState = states.BOOKNAMEUNKNOWN;
-
-        var url_parts = urll.parse(req.url, true);
-        var query = url_parts.query;
-        console.log(JSON.stringify(query));
-        var param = query.param;
-        var param2 = query.param2;
-
-        console.log("param  is " + param);
-        console.log("param 2 is " + param2);
 
         var randomNumber = Math.floor(Math.random() * searchBookMessage.length);
         var msg = searchBookMessage[randomNumber]
@@ -494,7 +494,7 @@ exports.noInput = function(req, res) {
         console.log('BOOKFOUND STATE')
         msg = res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
     } else {
-      res.status(200).json('I didn\'t understand that. Can you say it again?');
+        res.status(200).json('I didn\'t understand that. Can you say it again?');
     }
 }
 
