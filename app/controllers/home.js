@@ -444,7 +444,7 @@ exports.noInput = function(req, res) {
         randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
         var msg = afterBookRecommend[randomNumber]
 
-        res.status(200).json(msg);
+        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
         msg = res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
