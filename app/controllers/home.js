@@ -363,6 +363,10 @@ exports.getBookByGenre = function(req, res) {
                     var random = Math.floor(Math.random() * results.books.length);
                     recommendedBook = results.books[random];
                     recommendedBook = recommendedBook.title
+
+                    currentBook.name = results.books[random];
+                    fillBookParams(currentBook.name);
+
                     console.log(recommendedBook);
                     console.log("-----------------Printing Book by Genre-----------------------");
                     res.status(200).json(recommendedBook);
@@ -377,26 +381,6 @@ exports.getBookByGenre = function(req, res) {
     }
 }
 
-<<<<<<< HEAD
-exports.noInput = function(req, res) {
-    if (currentState == states.START) {
-        console.log('Changing state to BOOKNAMEUNKNOWN');
-        currentState = states.BOOKNAMEUNKNOWN;
-        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
-    } else if (currentState == states.BOOKFOUND) {
-        res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
-    }
-}
-
-exports.yesInput = function(req, res) {
-    if (currentState == states.START) {
-        console.log('Changing state to BOOKNAMEKNOWN');
-        currentState = states.BOOKNAMEKNOWN;
-        res.status(200).json('Which one?');
-    } else if (currentState == states.BOOKFOUND) {
-        res.status(200).json('Okay, I can help you with info like summary, ratings, reviews. what would you like to know?');
-    }
-=======
 exports.getAnotherBook = (req, res) => {
   idx = books.indexOf(currentBook.name);
   delete books[idx];
@@ -469,9 +453,9 @@ exports.yesInput = function(req, res){
   var param = query.param;
   switch (currentState) {
     case states.START:
-      console.log('Changing state to BOOKNAMEKNOWN');
       if (param === 'undefined') {
         // if book's name is not provided set the state to BOOKNameKNOWN else set it to BOOKFOUND
+        console.log('Changing state to BOOKNAMEKNOWN');
         currentState = states.BOOKNAMEKNOWN;
         msg = 'which one?'
       }
@@ -483,6 +467,17 @@ exports.yesInput = function(req, res){
         msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
       }
       break;
+
+      case states.BOOKNAMEKNOWN:
+      if(param != 'undefined') {
+        currentBook.name = param;
+        currentState = states.BOOKFOUND;
+        fillBookParams(param);
+        console.log ('Books name specified by user ' +param);
+        msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+      }
+      break;
+
     case states.BOOKFOUND:
       msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
       break;
@@ -562,7 +557,6 @@ exports.catchAll = function(req, res){
   }
 
   res.status(200).json(msg);
->>>>>>> 8081eb894b92d885146671ab7bc1cecdf5bb2a72
 }
 
 function longestCommonSubstring(string1, string2) {
