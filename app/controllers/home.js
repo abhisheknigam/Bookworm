@@ -23,7 +23,7 @@ var moreInfo = ["I can give you more info about it's ratings, reviews or summary
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
-var states = new Enum(['START', 'BOOKFOUND', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
+var states = new Enum(['START', 'SRCHBYGENRE','SRCHBYAUTHOR','BOOKFOUND', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
 
 var currentState = states.START;
 
@@ -231,8 +231,18 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     var query = url_parts.query;
     console.log(JSON.stringify(query));
 
+    if (query.name === 'undefined') {
+      currentState = states.SRCHBYAUTHOR;
+      return res.status(200).json ('Sure. Can you please name the AUTHOR?');
+    }
+
+    return searchBookByAuthor (req, res, query.name);
+}
+
+var searchBookByAuthor = (req, res, authorName) => {
+
     var options = {
-        url: url + "&q=" + query.name,
+        url: url + "&q=" + authorName,
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -319,6 +329,11 @@ exports.getBookByGenre = function(req, res) {
     longestIndex = -1;
     idx = -1;
     genre = query.genre;
+
+    if (genre === 'undefined') {
+      currentState = states.SRCHBYGENRE;
+      return res.status(200).json ('Sure. Which genre\'s book do you prefer?');
+    }
 
     console.log(JSON.stringify(keys));
     for (var i = 0; i < keys.length; i++) {
@@ -463,6 +478,15 @@ exports.yesInput = function(req, res) {
         case states.BOOKFOUND:
             msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
             break;
+
+        case states.SRCHBYGENRE:
+          console.log('searchBookByGenre ');
+          //TODO: put the code for search by genre
+          break;
+        case states.SRCHBYAUTHOR:
+          console.log('searchBookByAuthor: authorName ' + param);
+          searchBookByAuthor (req, res, param);
+          break;
     }
     res.status(200).json(msg);
 }
