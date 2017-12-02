@@ -17,9 +17,8 @@ var rating;
 
 //TODO
 
-var noBookSpecified = ["Sorry! I don\'t have a book name. Can you please tell me the book\'s name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book are you taking about again ?']
-var afterBookRecommend = ["% .Would you like me to read a summary ?"]
-var moreInfo = ["I can give you more info about it's ratings, reviews or summary. Do you want to know more", "Would you like to know more about it's ratings, reviews or summary ?"];
+var noBookSpecified = ["Sorry! I don\'t have a book name. Can you please tell me the book\'s name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you taking about again ?']
+var afterBookRecommend = ["I have info about it's ratings, reviews or summary. What would you like to know?", "Would you like to know more about it's ratings, reviews or summary ?", "How about some information on its rating, summary or reviews ?"];
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
@@ -207,8 +206,10 @@ exports.getSummary = function(req, res) {
             return res.status(200).json(information);
         });
     } else {
+        randomNumber = Math.floor(Math.random() * noBookSpecified.length);
+        var utterance = noBookSpecified[randomNumber]
         console.log('No book specified');
-        return res.status(200).json('No book specified');
+        return res.status(200).json(utterance);
     }
 }
 
@@ -242,7 +243,10 @@ exports.getBookRecommendationByAuthor = function(req, res) {
         if (!error && response.statusCode == 200) {
             //var parsedXML = xml.parse(body);
             var parsedXML = "";
-            var randomRecommendation = "No book found";
+
+            randomNumber = Math.floor(Math.random() * noBookSpecified.length);
+            var randomRecommendation = noBookSpecified[randomNumber]
+
             parser.parseString(body, (err, result) => {
                 parsedXML = result;
                 var works = parsedXML.GoodreadsResponse.search[0].results[0].work;
@@ -396,7 +400,8 @@ exports.getBookRating = function(req, res) {
     if (currentState == states.BOOKFOUND) {
         msg = 'The book ' + currentBook.name + 'is rated ' + currentBook.rating;
     } else {
-        msg = 'Sorry! I don\'t have book name. Could you please tell me the book\'s name?';
+        randomNumber = Math.floor(Math.random() * noBookSpecified.length);
+        var msg = noBookSpecified[randomNumber]
     }
     res.status(200).json(msg);
 }
@@ -422,7 +427,11 @@ exports.noInput = function(req, res) {
     if (currentState == states.START) {
         console.log('Changing state to BOOKNAMEUNKNOWN');
         currentState = states.BOOKNAMEUNKNOWN;
-        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+
+        randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
+        var msg = afterBookRecommend[randomNumber]
+
+        res.status(200).json(msg);
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
         msg = res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
@@ -446,7 +455,8 @@ exports.yesInput = function(req, res) {
                 currentState = states.BOOKFOUND;
                 fillBookParams(param);
                 console.log('Books name specified by user ' + param);
-                msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+                randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
+                msg = afterBookRecommend[randomNumber]
             }
             break;
 
@@ -456,12 +466,14 @@ exports.yesInput = function(req, res) {
                 currentState = states.BOOKFOUND;
                 fillBookParams(param);
                 console.log('Books name specified by user ' + param);
-                msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+                randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
+                msg = afterBookRecommend[randomNumber]
             }
             break;
 
         case states.BOOKFOUND:
-            msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+            randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
+            msg = afterBookRecommend[randomNumber]
             break;
     }
     res.status(200).json(msg);
@@ -533,7 +545,8 @@ exports.catchAll = function(req, res) {
     switch (currentState) {
         case states.BOOKNAMEKNOWN:
             currentBook.name = istring;
-            msg = 'Good choice. I can help you with information like rating, review, summary. What do you want to know?';
+            randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
+            msg = afterBookRecommend[randomNumber];
             break;
     }
 
