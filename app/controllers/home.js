@@ -132,16 +132,24 @@ exports.recommendMeAbook = function(req, res) {
         },
         body: JSON.stringify(req.body)
     };
+
     httpsRequest(options, function callback(error, response, body) {
         if (!error && response.statusCode == 200) {
             var innerInfo = JSON.parse(body);
             if (innerInfo.status == 'OK') {
                 results = innerInfo.results.books;
                 var randomRecommendation = results[Math.floor(Math.random() * results.length)];
+
                 title = randomRecommendation['title'];
                 title = title.replace(/["]+/g, '');
+
+                currentBook.name = title;
+
                 author = randomRecommendation['author'];
+                currentBook.author = author;
+
                 val = title + " by " + author;
+
 
                 sentence = bookAppend[Math.floor(Math.random() * bookAppend.length)]
                 sentence = sentence.replace("%", val)
@@ -230,17 +238,18 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
     console.log(JSON.stringify(query));
+
+    if (query.name === 'undefined') {
+        currentState = states.SRCHBYAUTHOR;
+        return res.status(200).json('Sure. Can you please name the AUTHOR?');
+    }
+
     return searchBookByAuthor(req, res, query.name);
 }
 
 var searchBookByAuthor = (req, res, authorName) => {
     arr = [];
     url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
-
-    if (query.name === 'undefined') {
-        currentState = states.SRCHBYAUTHOR;
-        return res.status(200).json('Sure. Can you please name the AUTHOR?');
-    }
 
     var options = {
         url: url + "&q=" + authorName,
