@@ -239,15 +239,18 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     var query = url_parts.query;
     console.log(JSON.stringify(query));
 
-    if (query.name === 'undefined') {
-        currentState = states.SRCHBYAUTHOR;
-        return res.status(200).json('Sure. Can you please name the AUTHOR?');
-    }
+
 
     return searchBookByAuthor(req, res, query.name);
 }
 
 var searchBookByAuthor = (req, res, authorName) => {
+
+    if (authorName === 'undefined') {
+        currentState = states.SRCHBYAUTHOR;
+        return res.status(200).json('Sure. Can you please name the AUTHOR?');
+    }
+
     arr = [];
     url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
 
