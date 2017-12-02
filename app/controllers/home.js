@@ -477,6 +477,15 @@ exports.noInput = function(req, res) {
         console.log('Changing state to BOOKNAMEUNKNOWN');
         currentState = states.BOOKNAMEUNKNOWN;
 
+        var url_parts = urll.parse(req.url, true);
+        var query = url_parts.query;
+        console.log(JSON.stringify(query));
+        var param = query.param;
+        var param2 = query.param2;
+
+        console.log("param  is " + param);
+        console.log("param 2 is " + param2);
+
         var randomNumber = Math.floor(Math.random() * searchBookMessage.length);
         var msg = searchBookMessage[randomNumber]
         res.status(200).json(msg);
@@ -492,6 +501,11 @@ exports.yesInput = function(req, res) {
     var query = url_parts.query;
     console.log(JSON.stringify(query));
     var param = query.param;
+    var param2 = query.param2;
+
+    console.log("param  is " + param);
+    console.log("param 2 is " + param2);
+
     switch (currentState) {
         case states.START:
             if (param === 'undefined') {
@@ -529,10 +543,8 @@ exports.yesInput = function(req, res) {
             res.status(200).json(msg);
             break;
         case states.SRCHBYGENRE:
-
             console.log('searchBookByGenre ');
             searchBookByGenre(req, res, param)
-
             break;
 
         case states.SRCHBYAUTHOR:
