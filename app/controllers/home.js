@@ -17,7 +17,8 @@ var rating;
 
 //TODO
 
-var noBookSpecified = ["Sorry! I don\'t have a book name. Can you please tell me the book\'s name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you taking about again ?']
+var searchBookMessage = ["I can search for books based by author, genre. What do I need to search for you?", "I can help you search book by author or genre. What would you like to do ?", "Okay, So do you want to search a book by author or by the genre ?"]
+var noBookSpecified = ["Sorry! I don't have the book's name. Can you tell me a book's name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you taking about again ?']
 var afterBookRecommend = ["I have info about it's ratings, reviews or summary. What would you like to know?", "Would you like to know more about it's ratings, reviews or summary ?", "How about some information on its rating, summary or reviews ?"];
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
@@ -219,7 +220,8 @@ exports.getAuthor = function(req, res) {
     if (currentState == states.BOOKFOUND) {
         msg = 'Book is written by ' + currentBook.author;
     } else {
-        msg = 'Sorry! I don\'t have book name. Can you please tell me the book\'s name first';
+        randomNumber = Math.floor(Math.random() * noBookSpecified.length);
+        msg = noBookSpecified[randomNumber];
     }
     return res.status(200).json(msg);
 }
@@ -441,10 +443,10 @@ exports.noInput = function(req, res) {
         console.log('Changing state to BOOKNAMEUNKNOWN');
         currentState = states.BOOKNAMEUNKNOWN;
 
-        randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
-        var msg = afterBookRecommend[randomNumber]
+        var randomNumber = Math.floor(Math.random() * searchBookMessage.length);
+        var msg = searchBookMessage[randomNumber]
+        res.status(200).json(msg);
 
-        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
         msg = res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
@@ -463,6 +465,7 @@ exports.yesInput = function(req, res) {
                 console.log('Changing state to BOOKNAMEKNOWN');
                 currentState = states.BOOKNAMEKNOWN;
                 msg = 'which one?'
+                res.status(200).json(msg);
             } else {
                 currentBook.name = param;
                 currentState = states.BOOKFOUND;
@@ -470,6 +473,7 @@ exports.yesInput = function(req, res) {
                 console.log('Books name specified by user ' + param);
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
                 msg = afterBookRecommend[randomNumber]
+                res.status(200).json(msg);
             }
             break;
 
@@ -481,12 +485,14 @@ exports.yesInput = function(req, res) {
                 console.log('Books name specified by user ' + param);
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
                 msg = afterBookRecommend[randomNumber]
+                res.status(200).json(msg);
             }
             break;
 
         case states.BOOKFOUND:
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
             msg = afterBookRecommend[randomNumber]
+            res.status(200).json(msg);
             break;
         case states.SRCHBYGENRE:
             console.log('searchBookByGenre ');
@@ -498,7 +504,6 @@ exports.yesInput = function(req, res) {
             searchBookByAuthor(req, res, param);
             break;
     }
-    res.status(200).json(msg);
 }
 
 // get all the information about the book.
