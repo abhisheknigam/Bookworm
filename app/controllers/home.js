@@ -22,10 +22,11 @@ var bookAppend = ["I found % on this week's New York Times bestseller list", "Th
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
 var states = new Enum(['START', 'BOOKFOUND', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
+
 var currentState = states.START;
 
 var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Family': 11, 'Political': 12 }
-var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships'}
+var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships' }
 
 exports.getBestSeller = function(req, res) {
     body = JSON.stringify(req.body);
@@ -300,61 +301,108 @@ exports.getAllGenre = function(req, res) {
 }
 
 exports.getBookByGenre = function(req, res) {
-    dict = {}
-
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
     console.log(JSON.stringify(query));
-    var genre = ''
-    if (query.genre == 'travel') {
-        genre = 'Travel';
+    keys = Object.keys(genreDict);
+
+    longestIndex = -1;
+    idx = -1;
+    genre = query.genre;
+
+    console.log(JSON.stringify(keys));
+    for (var i = 0; i < keys.length; i++) {
+        var longest = longestCommonSubstring(genre, keys[i]);
+        if (parseInt(longest) > longestIndex) {
+            longestIndex = longest;
+            idx = genreDict[keys[i]];
+        }
     }
 
-    url = 'https://api.nytimes.com/svc/books/v3/lists//' + genre + '.json?api-key=94097933506e40859a56e77947d60dce';
+    if (idx != undefined && idx != '') {
+        realGenre = mapping[idx];
+        console.log(realGenre);
+        url = 'https://api.nytimes.com/svc/books/v3/lists//' + realGenre + '.json?api-key=94097933506e40859a56e77947d60dce';
 
-    var options = {
-        url: url,
-        method: 'GET',
-    };
+        var options = {
+            url: url,
+            method: 'GET',
+        };
 
-    httpsRequest(options, function callback(error, response, body) {
-        console.log(url);
-        if (!error && response.statusCode == 200) {
-            var innerInfo = JSON.parse(body);
-            if (innerInfo.status == 'OK') {
-                results = innerInfo.results;
-                console.log(results);
-                console.log("length of results" + results.books.length);
-                var random = Math.floor(Math.random() * results.books.length);
-                recommendedBook = results.books[random];
-                recommendedBook = recommendedBook.title
-                console.log(recommendedBook);
-                console.log("-----------------Printing Book by Genre-----------------------");
-                res.status(200).json(recommendedBook);
+        httpsRequest(options, function callback(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                var innerInfo = JSON.parse(body);
+                if (innerInfo.status == 'OK') {
+                    results = innerInfo.results;
+                    console.log("length of results" + results.books.length);
+                    var random = Math.floor(Math.random() * results.books.length);
+                    recommendedBook = results.books[random];
+                    recommendedBook = recommendedBook.title
+                    console.log(recommendedBook);
+                    console.log("-----------------Printing Book by Genre-----------------------");
+                    res.status(200).json(recommendedBook);
+                }
+            } else {
+                console.log('error:' + error);
+                res.status(404);
             }
-        } else {
-            console.log('error:' + error);
-            res.status(404);
+        });
+    } else {
+        res.status(200).json('I couldnt find books in the genre ' + genre);
+    }
+}
+
+exports.noInput = function(req, res) {
+    if (currentState == states.START) {
+        console.log('Changing state to BOOKNAMEUNKNOWN');
+        currentState = states.BOOKNAMEUNKNOWN;
+        res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
+    } else if (currentState == states.BOOKFOUND) {
+        res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
+    }
+}
+
+exports.yesInput = function(req, res) {
+    if (currentState == states.START) {
+        console.log('Changing state to BOOKNAMEKNOWN');
+        currentState = states.BOOKNAMEKNOWN;
+        res.status(200).json('Which one?');
+    } else if (currentState == states.BOOKFOUND) {
+        res.status(200).json('Okay, I can help you with info like summary, ratings, reviews. what would you like to know?');
+    }
+}
+
+function longestCommonSubstring(string1, string2) {
+    // init max value
+    var longestCommonSubstring = 0;
+    // init 2D array with 0
+    var table = [],
+        len1 = string1.length,
+        len2 = string2.length,
+        row, col;
+    for (row = 0; row <= len1; row++) {
+        table[row] = [];
+        for (col = 0; col <= len2; col++) {
+            table[row][col] = 0;
         }
-    });
-}
-
-exports.noInput = function(req, res){
-  if(currentState == states.START){
-    console.log('Changing state to BOOKNAMEUNKNOWN');
-    currentState = states.BOOKNAMEUNKNOWN;
-    res.status(200).json('I can search for books based by author, genre. What do I need to search for you?');
-  }else if(currentState == states.BOOKFOUND){
-    res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
-  }
-}
-
-exports.yesInput = function(req, res){
-  if(currentState == states.START){
-    console.log('Changing state to BOOKNAMEKNOWN');
-    currentState = states.BOOKNAMEKNOWN;
-    res.status(200).json('Which one?');
-  }else if(currentState == states.BOOKFOUND){
-    res.status(200).json('Okay, I can help you with info like summary, ratings, reviews. what would you like to know?');
-  }
+    }
+    // fill table
+    var i, j;
+    for (i = 0; i < len1; i++) {
+        for (j = 0; j < len2; j++) {
+            if (string1[i] === string2[j]) {
+                if (table[i][j] === 0) {
+                    table[i + 1][j + 1] = 1;
+                } else {
+                    table[i + 1][j + 1] = table[i][j] + 1;
+                }
+                if (table[i + 1][j + 1] > longestCommonSubstring) {
+                    longestCommonSubstring = table[i + 1][j + 1];
+                }
+            } else {
+                table[i + 1][j + 1] = 0;
+            }
+        }
+    }
+    return longestCommonSubstring;
 }
