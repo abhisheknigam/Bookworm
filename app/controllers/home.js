@@ -141,6 +141,9 @@ exports.recommendMeAbook = function(req, res) {
             var innerInfo = JSON.parse(body);
             if (innerInfo.status == 'OK') {
                 results = innerInfo.results.books;
+                books = [];
+                authors = [];
+                ratings = [];
                 for (var i = 0; i < results.length; i++) {
                     books.push(results[i]['title'].replace(/["]+/g, ''));
                     authors.push(results[i]['author']);
@@ -386,6 +389,15 @@ var searchBookByGenre = (req, res, genre) => {
                 if (innerInfo.status == 'OK') {
                     results = innerInfo.results;
                     console.log("length of results" + results.books.length);
+                    books = [];
+                    authors = [];
+                    ratings = [];
+                    for (var i = 0; i < results.length; i++) {
+                        books.push(results[i]['title'].replace(/["]+/g, ''));
+                        authors.push(results[i]['author']);
+                        summary.push(results[i]['description']);
+                    }
+
                     var random = Math.floor(Math.random() * results.books.length);
                     recommendedBook = results.books[random];
                     recommendedBook = recommendedBook.title
