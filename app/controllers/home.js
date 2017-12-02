@@ -227,21 +227,21 @@ exports.getAuthor = function(req, res) {
 }
 
 exports.getBookRecommendationByAuthor = function(req, res) {
-    arr = [];
-    url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
-
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
     console.log(JSON.stringify(query));
+    return searchBookByAuthor(req, res, query.name);
+}
+
+var searchBookByAuthor = (req, res, authorName) => {
+    arr = [];
+    url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+
     if (query.name === 'undefined') {
         currentState = states.SRCHBYAUTHOR;
         return res.status(200).json('Sure. Can you please name the AUTHOR?');
     }
 
-    return searchBookByAuthor(req, res, query.name);
-}
-
-var searchBookByAuthor = (req, res, authorName) => {
     var options = {
         url: url + "&q=" + authorName,
         method: 'GET',
@@ -328,11 +328,15 @@ exports.getBookByGenre = function(req, res) {
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
     console.log(JSON.stringify(query));
-    keys = Object.keys(genreDict);
 
+    searchBookByGenre(req, res, query.genre);
+}
+
+var searchBookByGenre = (req, res, genre) => {
+
+    keys = Object.keys(genreDict);
     longestIndex = -1;
     idx = -1;
-    genre = query.genre;
 
     if (genre === 'undefined') {
         currentState = states.SRCHBYGENRE;
@@ -472,7 +476,7 @@ exports.yesInput = function(req, res) {
                 fillBookParams(param);
                 console.log('Books name specified by user ' + param);
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
-                msg = afterBookRecommend[randomNumber]
+                msg = afterBookRecommend[randomNumber];
                 res.status(200).json(msg);
             }
             break;
@@ -484,19 +488,21 @@ exports.yesInput = function(req, res) {
                 fillBookParams(param);
                 console.log('Books name specified by user ' + param);
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
-                msg = afterBookRecommend[randomNumber]
+                msg = afterBookRecommend[randomNumber];
                 res.status(200).json(msg);
             }
             break;
 
         case states.BOOKFOUND:
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
-            msg = afterBookRecommend[randomNumber]
+            msg = afterBookRecommend[randomNumber];
             res.status(200).json(msg);
             break;
         case states.SRCHBYGENRE:
+
             console.log('searchBookByGenre ');
-            //TODO: put the code for search by genre
+            searchBookByGenre(req, res, param)
+
             break;
 
         case states.SRCHBYAUTHOR:
