@@ -16,8 +16,10 @@ var bookid;
 var rating;
 
 //TODO
-var afterBookRecommend = ["% .Would you like me to read a summary"]
-var moreInfo = ["I can give you more info about it like ratings, reviews or summary"];
+
+var noBookSpecified = ["Sorry! I don\'t have a book name. Can you please tell me the book\'s name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book are you taking about again ?']
+var afterBookRecommend = ["% .Would you like me to read a summary ?"]
+var moreInfo = ["I can give you more info about it's ratings, reviews or summary. Do you want to know more", "Would you like to know more about it's ratings, reviews or summary ?"];
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
@@ -260,11 +262,6 @@ exports.getBookRecommendationByAuthor = function(req, res) {
                     currentBook.author = authors[randomNumber];
                     currentBook.rating = ratings[randomNumber];
 
-                    // book = randomBook;
-                    // author = randomBookAuthor;
-                    // rating = randomRatings;
-                    // information = '';
-
                     randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + ".";
                     currentState = states.BOOKFOUND;
                 }
@@ -432,7 +429,6 @@ exports.noInput = function(req, res) {
     }
 }
 
-<<<<<<< HEAD
 exports.yesInput = function(req, res) {
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
@@ -440,9 +436,9 @@ exports.yesInput = function(req, res) {
     var param = query.param;
     switch (currentState) {
         case states.START:
-            console.log('Changing state to BOOKNAMEKNOWN');
             if (param === 'undefined') {
                 // if book's name is not provided set the state to BOOKNameKNOWN else set it to BOOKFOUND
+                console.log('Changing state to BOOKNAMEKNOWN');
                 currentState = states.BOOKNAMEKNOWN;
                 msg = 'which one?'
             } else {
@@ -453,50 +449,22 @@ exports.yesInput = function(req, res) {
                 msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
             }
             break;
+
+        case states.BOOKNAMEKNOWN:
+            if (param != 'undefined') {
+                currentBook.name = param;
+                currentState = states.BOOKFOUND;
+                fillBookParams(param);
+                console.log('Books name specified by user ' + param);
+                msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
+            }
+            break;
+
         case states.BOOKFOUND:
             msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
             break;
     }
     res.status(200).json(msg);
-=======
-exports.yesInput = function(req, res){
-  var url_parts = urll.parse(req.url, true);
-  var query = url_parts.query;
-  console.log(JSON.stringify(query));
-  var param = query.param;
-  switch (currentState) {
-    case states.START:
-      if (param === 'undefined') {
-        // if book's name is not provided set the state to BOOKNameKNOWN else set it to BOOKFOUND
-        console.log('Changing state to BOOKNAMEKNOWN');
-        currentState = states.BOOKNAMEKNOWN;
-        msg = 'which one?'
-      }
-      else {
-        currentBook.name = param;
-        currentState = states.BOOKFOUND;
-        fillBookParams(param);
-        console.log ('Books name specified by user ' +param);
-        msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
-      }
-      break;
-
-      case states.BOOKNAMEKNOWN:
-      if(param != 'undefined') {
-        currentBook.name = param;
-        currentState = states.BOOKFOUND;
-        fillBookParams(param);
-        console.log ('Books name specified by user ' +param);
-        msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
-      }
-      break;
-
-    case states.BOOKFOUND:
-      msg = 'Okay, I can help you with info like summary, ratings, reviews. what would you like to know?';
-      break;
-  }
-  res.status(200).json(msg);
->>>>>>> 07479498c6a11d43a7af3e7d13db10fd2c8a0889
 }
 
 // get all the information about the book.
@@ -555,7 +523,6 @@ exports.getReadingList = (req, res) => {
     res.status(200).json(msg);
 }
 
-<<<<<<< HEAD
 exports.catchAll = function(req, res) {
     var url_parts = urll.parse(req.url, true);
     var query = url_parts.query;
@@ -571,23 +538,6 @@ exports.catchAll = function(req, res) {
     }
 
     res.status(200).json(msg);
-=======
-exports.catchAll = function(req, res){
-  var url_parts = urll.parse(req.url, true);
-  var query = url_parts.query;
-  console.log(JSON.stringify(query));
-  var istring = query.string;
-  var msg = '';
-  console.log('incoming string in catch all is ' + istring);
-  switch(currentState) {
-    case states.BOOKNAMEKNOWN:
-      currentBook.name = istring;
-      msg = 'Good choice. I can help you with information like rating, review, summary. What do you want to know?';
-      break;
-  }
-
-  res.status(200).json(msg);
->>>>>>> 07479498c6a11d43a7af3e7d13db10fd2c8a0889
 }
 
 function longestCommonSubstring(string1, string2) {
