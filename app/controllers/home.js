@@ -27,6 +27,7 @@ var afterBookRecommend = ["I have info about it's ratings, reviews or summary. W
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
+var failureMsg = ["I didn't understand that. Can you say it again?"]
 var states = new Enum(['START', 'BOOKFOUND', 'SRCHBYGENRE', 'SRCHBYAUTHOR', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
 
 var currentState = states.START;
@@ -524,9 +525,11 @@ exports.noInput = function(req, res) {
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
             msg = afterBookRecommend[randomNumber];
             res.status(200).json(msg);
+        }else {
+          res.status(200).json(failureMsg[0];
         }
     } else {
-        res.status(200).json('I didn\'t understand that. Can you say it again?');
+        res.status(200).json(failureMsg[0]);
     }
 }
 
@@ -570,6 +573,8 @@ exports.yesInput = function(req, res) {
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
                 msg = afterBookRecommend[randomNumber];
                 res.status(200).json(msg);
+            }else{
+              res.status(200).json(failureMsg[0]);
             }
             break;
 
@@ -588,6 +593,9 @@ exports.yesInput = function(req, res) {
             console.log('searchBookByAuthor: authorName ' + param2);
             searchBookByAuthor(req, res, param2);
             break;
+
+        default:
+            res.status(200).json(failureMsg[0]);
     }
 }
 
@@ -660,6 +668,9 @@ exports.catchAll = function(req, res) {
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
             msg = afterBookRecommend[randomNumber];
             break;
+
+        default:
+          res.status(200).json(failureMsg[0]);
     }
 
     res.status(200).json(msg);
