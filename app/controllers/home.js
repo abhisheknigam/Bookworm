@@ -35,7 +35,7 @@ var states = new Enum(['START', 'BOOKFOUND', 'SRCHBYGENRE', 'SRCHBYAUTHOR', 'BOO
 
 var currentState = states.START;
 
-var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Romance': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Political': 12, 'Biography': 24, "Combined Print and E-Book Fiction": 13, "Combined Print and E-Book Nonfiction": 14, "Hardcover Fiction": 13, "Hardcover Nonfiction": 14, "Trade Fiction Paperback": 13, "Mass Market Paperback": 13, "Paperback Nonfiction": 14, "E-Book Fiction": 13, "E-Book Nonfiction": 14, "Hardcover Advice": 15, "Paperback Advice": 15, "Advice How-To and Miscellaneous": 15, "Chapter Books": 13, "Childrens Middle Grade": 3, "Childrens Middle Grade E-Book": 3, "Childrens Middle Grade Hardcover": 3, "Childrens Middle Grade Paperback": 3, "Paperback Books": 13, "Picture Books": 17, "Series Books": 13, "Young Adult": 16, "Young Adult E-Book": 16, "Young Adult Hardcover": 16, "Young Adult Paperback": 16, "Hardcover Graphic Books": 17, "Paperback Graphic Books": 17, "Manga": 17, "Combined Print Fiction": 13, "Combined Print Nonfiction": 14, "Animals": 18, "Business Books": 10, "Celebrities": 19, "Crime and Punishment": 2, "Culture": 6, "Education": 6, "Espionage": 20, "Expeditions Disasters and Adventures": 20, "Fashion Manners and Customs": 21, "Food and Fitness": 7, "Games and Activities": 22, "Hardcover Business Books": 10, "Health": 7, "Humor": 23, "Indigenous Americans": 24, "Relationships": 25, "Paperback Business Books": 10, "Family": 11, "Hardcover Political Books": 26, "Race and Civil Rights": 26, "Religion Spirituality and Faith": 30, "Science": 27, "Sports": 28, "Travel": 29 }
+var genreDict = { 'blues': 1, 'sad': 1, 'thriller': 2, 'horror': 2, 'crime': 2, 'children': 3, 'animal': 4, 'biography': 5, 'education': 6, 'Food and Fitness': 7, 'health': 8, 'Relationships': 9, 'Romance': 9, 'Business': 10, 'Business Books': 10, 'Paperback Business Books': 10, 'Political': 12, 'Biography': 24, "Combined Print and E-Book Fiction": 13, "Combined Print and E-Book Nonfiction": 14, "Hardcover Fiction": 13, "Hardcover Nonfiction": 14, "Trade Fiction Paperback": 13, "Mass Market Paperback": 13, "Paperback Nonfiction": 14, "E-Book Fiction": 13, "E-Book Nonfiction": 14, "Hardcover Advice": 15, "Paperback Advice": 15, "Advice How-To and Miscellaneous": 15, "Chapter Books": 13, "Childrens Middle Grade": 3, "Childrens Middle Grade E-Book": 3, "Childrens Middle Grade Hardcover": 3, "Childrens Middle Grade Paperback": 3, "Paperback Books": 13, "Picture Books": 17, "Series Books": 13, "Young Adult": 16, "Young Adult E-Book": 16, "Young Adult Hardcover": 16, "Young Adult Paperback": 16, "Hardcover Graphic Books": 17, "Paperback Graphic Books": 17, "Manga": 17, "Combined Print Fiction": 13, "Combined Print Nonfiction": 14, "Animals": 18, "Business Books": 10, "Celebrities": 19, "Crime and Punishment": 2, "Culture": 6, "Education": 6, "Espionage": 20, "Expeditions Disasters and Adventures": 20, "Fashion Manners and Customs": 21, "Food and Fitness": 7, "Games and Activities": 22, "Hardcover Business Books": 10, "Health": 7, "Humor": 23, "Indigenous Americans": 24, "Relationships": 25, "Paperback Business Books": 10, "Family": 11, "Hardcover Political Books": 26, "Race and Civil Rights": 26, "Religion Spirituality and Faith": 30, "Science": 27, "Sports": 28, "Travel": 29, "Sci Fi": 27 }
 var mapping = { 1: 'Advice How-To and Miscellaneous', 2: 'Crime and Punishment', 3: 'Childrens Middle Grade', 4: 'Animals', 5: 'Indigenous Americans', 6: 'Food and Fitness', 8: 'Health', 9: 'Relationships', 13: 'Combined Print and E-Book Fiction', 14: 'Combined Print and E-Book Nonfiction', 15: 'Advice How-To and Miscellaneous', 16: 'Young Adult', 17: 'Picture Books', 18: 'Animals', 19: 'Celebrities', 20: 'Expeditions Disasters and Adventures', 21: 'Fashion Manners and Customs', 22: 'Games and Activities', 23: 'Humor', 24: 'Indigenous Americans', 25: 'Relationships', 26: 'Hardcover Political Books', 27: 'Science', 28: 'Sports', 29: 'Travel', 30: 'Religion Spirituality and Faith', 11: 'Family' }
 var infoDict = { 'summary': false, 'rating': false, 'author': false }
 
@@ -233,9 +233,9 @@ exports.getSummary = function(req, res) {
             sentence = sentence + ". whenever you are satisfied you can add the book to your reading list."
         }
 
-        console.log(sentence);
+        console.log(information);
 
-        return res.status(200).json(sentence);
+        return res.status(200).json(information);
     } else if (currentBook.name != null && currentBook.name != '') {
         arr = [];
         url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
@@ -525,7 +525,7 @@ var searchBookByGenre = (req, res, genre) => {
                     currentState = states.BOOKFOUND;
                     fillBookParams(currentBook.name);
 
-                    msg = "I found the book " + currentBook.name + " by " + currentBook.author + " in " + genre + " Genre. "+ afterBookRecommend;
+                    msg = "I found the book " + currentBook.name + " in " + realGenre + " Genre. Would You like to know more ?";
 
                     console.log(msg);
                     console.log("-----------------Printing Book by Genre-----------------------");
@@ -777,7 +777,7 @@ var fillBookParams = (bookName) => {
 
                 var index = getPosition(information, '.', 3);
                 if (index != -1) {
-                    information = str.substring(1, index);
+                    information = information.substring(1, index);
                 }
 
                 console.log(bookid);
