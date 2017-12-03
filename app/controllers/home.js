@@ -320,6 +320,23 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     if (currentState == states.BOOKFOUND && query.name == "undefined") {
         msg = 'This Book is written by ' + currentBook.author;
 
+        infoDict['author'] = true;
+        var count = 0;
+
+        for (var key in infoDict) {
+            if (infoDict[key] === false) {
+                if (count == 0) {
+                    msg += ". I can also tell you about its"
+                }
+                msg = msg + ", " + key;
+                count++;
+            }
+        }
+
+        if (count == 2) {
+            msg = msg + ". whenever you are satisfied you can add the book to your reading list."
+        }
+
         console.log("Inside Undefined getBookRecommendationByAuthor" + currentBook.author);
         res.status(200).json(msg);
     } else {
