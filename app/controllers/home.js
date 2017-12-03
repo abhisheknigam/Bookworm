@@ -509,7 +509,7 @@ exports.noInput = function(req, res) {
 
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
-        msg = res.status(200).json('Should I add this book to your reading list or I can give you another book? You can also start over a new search');
+        msg = res.status(200).json('Should I add this book to your reading list or, I can give you another book? You can also start over a new search');
     } else if (currentState == states.SRCHBYGENRE) {
         console.log('searchBookByGenre: Genre ' + param3);
         searchBookByGenre(req, res, param3)
