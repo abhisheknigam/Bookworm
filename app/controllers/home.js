@@ -379,7 +379,7 @@ var searchBookByAuthor = (req, res, authorName) => {
 
                     fillBookParams(currentBook.name);
 
-                    randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + ". Would you like to know more ?";
+                    randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + afterBookRecommend;
                     currentState = states.BOOKFOUND;
                 }
                 console.log(randomRecommendation);
