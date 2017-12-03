@@ -22,10 +22,11 @@ var summary = [];
 var loopCount = 0;
 
 //TODO
+//". What would you like to know more about in this book? Ratings, Author or Summary ?"
 
 var searchBookMessage = ["I can search for books based by author, genre. What do I need to search for you?", "I can help you search book by author or genre. What would you like to do ?", "Okay, So do you want to search a book by author or by the genre ?"]
 var noBookSpecified = ["Sorry! I don't have the book's name. Can you tell me a book's name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you talking about again ?']
-var afterBookRecommend = ["I have info about it's ratings, author or summary. What would you like to know?", "Would you like to know about it's ratings, reviews or summary ?", "How about some information on its rating, summary or reviews ?"];
+var afterBookRecommend = [". I have info about it's ratings, author or summary. What would you like to know?"];
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
@@ -183,6 +184,7 @@ exports.recommendMeAbook = function(req, res) {
 
                 val = title + " by " + author;
 
+                console.log("Recommend me a book " + currentBook.name)
                 fillBookParams(currentBook.name);
 
                 sentence = bookAppend[Math.floor(Math.random() * bookAppend.length)]
@@ -192,7 +194,8 @@ exports.recommendMeAbook = function(req, res) {
 
                 var randomAppend = afterBookRecommend[Math.floor(Math.random() * afterBookRecommend.length)]
                 console.log(sentence + randomAppend);
-                currentState == states.BOOKFOUND;
+
+                currentState = states.BOOKFOUND;
                 arr.push(sentence + randomAppend);
 
                 res.status(200).json(sentence + randomAppend);
@@ -275,7 +278,14 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     var query = url_parts.query;
     console.log(JSON.stringify(query));
 
-    return searchBookByAuthor(req, res, query.name);
+    if (currentState == states.BOOKFOUND && query.name == undefined) {
+        msg = 'This Book is written by ' + currentBook.author;
+        res.status(200).json(msg);
+    } else {
+        return searchBookByAuthor(req, res, query.name);
+    }
+
+
 }
 
 var searchBookByAuthor = (req, res, authorName) => {
@@ -467,7 +477,12 @@ exports.getAnotherBook = (req, res) => {
         currentBook.author = authors[randomNumber];
         currentBook.rating = ratings[randomNumber];
         fillBookParams(currentBook.name);
-        msg = 'How about ' + currentBook.name + '?';
+
+        sentence = bookAppend[Math.floor(Math.random() * bookAppend.length)];
+        sentence = sentence.replace("%", currentBook.name + " by " + currentBook.author);
+
+        var randomAppend = afterBookRecommend[Math.floor(Math.random() * afterBookRecommend.length)];
+        msg = sentence + randomAppend;
     }
     res.status(200).json(msg);
 }
@@ -485,7 +500,7 @@ exports.startOver = (req, res) => {
     currentBook.rating = "";
     currentBook.genre = "";
     currentBook.summary = "";
-    res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, do you have a book in mind?');
+    res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?');
 }
 
 exports.getBookRating = function(req, res) {
