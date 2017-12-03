@@ -508,7 +508,7 @@ var searchBookByGenre = (req, res, genre) => {
                     currentState = states.BOOKFOUND;
                     fillBookParams(currentBook.name);
 
-                    msg = "I found the book " + currentBook.name + " by " + currentBook.author + " in " + genre + " Genre. "+ afterBookRecommend ?;
+                    msg = "I found the book " + currentBook.name + " by " + currentBook.author + " in " + genre + " Genre. "+ afterBookRecommend;
 
                     console.log(msg);
                     console.log("-----------------Printing Book by Genre-----------------------");
