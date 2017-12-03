@@ -21,4 +21,5 @@ module.exports = function(app) {
     app.get('/finished', home.finished);
     app.get('/startOver', home.startOver);
     app.get('/getBookTitle', home.getBookTitle);
+    app.get('/getBookByName', home.getBookByName);
 }
