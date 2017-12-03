@@ -231,6 +231,8 @@ exports.getSummary = function(req, res) {
 
         if (count == 2) {
             sentence = sentence + ". whenever you are satisfied you can add the book to your reading list."
+        } else if(count == 0) {
+            sentence = sentence + ". I can add this book to your reading list. Or you can also start a new search."
         }
 
         console.log(sentence);
@@ -286,6 +288,8 @@ exports.getSummary = function(req, res) {
 
             if (count == 2) {
                 information = information + ". whenever you are satisfied you can add the book to your reading list."
+            } else if(count == 0) {
+                information = information + ". I can add this book to your reading list. Or you can also start a new search."
             }
 
             return res.status(200).json(information);
@@ -323,6 +327,8 @@ exports.getAuthor = function(req, res) {
 
     if (count == 2) {
         msg = msg + ". whenever you are satisfied you can add the book to your reading list."
+    } else if(count == 0) {
+        msg = msg + ". I can add this book to your reading list. Or you can also start a new search."
     }
 
     return res.status(200).json(msg);
@@ -352,6 +358,8 @@ exports.getBookRecommendationByAuthor = function(req, res) {
 
         if (count == 2) {
             msg = msg + ". whenever you are satisfied you can add the book to your reading list."
+        } else if(count == 0) {
+            msg = msg + ". I can add this book to your reading list. Or you can also start a new search."
         }
 
         console.log("Inside Undefined getBookRecommendationByAuthor" + currentBook.author);
@@ -613,6 +621,8 @@ exports.getBookRating = function(req, res) {
 
     if (count == 2) {
         msg = msg + ". whenever you are satisfied you can add the book to your reading list."
+    } else if(count == 0) {
+        msg = msg + ". I can add this book to your reading list. Or you can also start a new search."
     }
 
     res.status(200).json(msg);
