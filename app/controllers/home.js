@@ -550,7 +550,7 @@ var searchBookByGenre = (req, res, genre) => {
                     currentState = states.BOOKFOUND;
                     fillBookParams(currentBook.name);
 
-                    msg = "I found the book " + currentBook.name + " in " + realGenre + " Genre. Would You like to know more ?";
+                    msg = "I found the book " + currentBook.name + " in " + genre + " Genre. "+afterBookRecommend;
 
                     console.log(msg);
                     console.log("-----------------Printing Book by Genre-----------------------");
@@ -612,7 +612,7 @@ exports.startOver = (req, res) => {
     currentBook.rating = "";
     currentBook.genre = "";
     currentBook.summary = "";
-    sendMsg('Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?')
+    sendMsg('Okay, I can search a book for you, or I can recommend you one. So, What would you like to do?')
     // res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?');
 }
 
