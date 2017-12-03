@@ -19,4 +19,6 @@ module.exports = function(app) {
     app.get('/getReadingList', home.getReadingList);
     app.get('/getAnotherBook', home.getAnotherBook);
     app.get('/finished', home.finished);
+    app.get('/startOver', home.startOver);
+    app.get('/getBookTitle', home.getBookTitle);
 }
