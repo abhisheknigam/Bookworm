@@ -446,6 +446,16 @@ exports.finished = (req, res) => {
     setStart();
 }
 
+exports.startOver = (req, res) => {
+  currentState = states.START;
+  currentBook.name = "";
+  currentBook.author = "";
+  currentBook.rating = "";
+  currentBook.genre = "";
+  currentBook.summary = "";
+  res.status(200).json('Okay, I can give you general information about a book or I can help you search one. So, do you have a book in mind?');
+}
+
 exports.getBookRating = function(req, res) {
     console.log('book rating intent');
     msg = '';
@@ -619,7 +629,7 @@ var fillBookParams = (bookName) => {
 exports.addToReadingList = (req, res) => {
     readingList.push(currentBook.name);
     console.log("Adding book " + currentBook.name + " to reading list");
-    res.status(200).json('Done. Do you want to search another book or are you finished?');
+    res.status(200).json('Done. Are you finished or do you want to start over?');
 }
 
 exports.getReadingList = (req, res) => {
