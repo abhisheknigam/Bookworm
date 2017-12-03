@@ -17,6 +17,7 @@ var rating;
 var books = [];
 var authors = [];
 var ratings = [];
+var summary = [];
 
 //TODO
 
@@ -493,6 +494,9 @@ exports.noInput = function(req, res) {
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
         msg = res.status(200).json('Should I add this book to your reading list or do you want to search another book?');
+    } else if (currentState == states.SRCHBYAUTHOR) {
+        console.log('searchBookByAuthor: authorName ' + param2);
+        searchBookByAuthor(req, res, param2);
     } else {
         res.status(200).json('I didn\'t understand that. Can you say it again?');
     }
@@ -550,8 +554,8 @@ exports.yesInput = function(req, res) {
             break;
 
         case states.SRCHBYAUTHOR:
-            console.log('searchBookByAuthor: authorName ' + param);
-            searchBookByAuthor(req, res, param);
+            console.log('searchBookByAuthor: authorName ' + param2);
+            searchBookByAuthor(req, res, param2);
             break;
     }
 }
