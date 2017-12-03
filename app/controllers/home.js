@@ -233,9 +233,9 @@ exports.getSummary = function(req, res) {
             sentence = sentence + ". whenever you are satisfied you can add the book to your reading list."
         }
 
-        console.log(information);
+        console.log(sentence);
 
-        return res.status(200).json(information);
+        return res.status(200).json(sentence);
     } else if (currentBook.name != null && currentBook.name != '') {
         arr = [];
         url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
