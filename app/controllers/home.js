@@ -257,18 +257,18 @@ exports.getSummary = function(req, res) {
             infoDict['summary'] = true;
             var count = 0;
 
-            for (var key in infoDict){
-              if(infoDict[key] === false){
-                if(count == 0){
-                  msg += ". I can also tell you about its"
+            for (var key in infoDict) {
+                if (infoDict[key] === false) {
+                    if (count == 0) {
+                        msg += ". I can also tell you about its"
+                    }
+                    msg = msg + ", " + key;
+                    count++;
                 }
-                msg = msg + ", " + key;
-                count++;
-              }
             }
 
-            if(count == 2){
-              msg = msg+ ". whenever you are satisfied you can add the book to your reading list."
+            if (count == 2) {
+                msg = msg + ". whenever you are satisfied you can add the book to your reading list."
             }
 
             return res.status(200).json(information);
@@ -294,18 +294,18 @@ exports.getAuthor = function(req, res) {
     infoDict['author'] = true;
     var count = 0;
 
-    for (var key in infoDict){
-      if(infoDict[key] === false){
-        if(count == 0){
-          msg += ". I can also tell you about its"
+    for (var key in infoDict) {
+        if (infoDict[key] === false) {
+            if (count == 0) {
+                msg += ". I can also tell you about its"
+            }
+            msg = msg + ", " + key;
+            count++;
         }
-        msg = msg + ", " + key;
-        count++;
-      }
     }
 
-    if(count == 2){
-      msg = msg+ ". whenever you are satisfied you can add the book to your reading list."
+    if (count == 2) {
+        msg = msg + ". whenever you are satisfied you can add the book to your reading list."
     }
 
     return res.status(200).json(msg);
@@ -317,7 +317,7 @@ exports.getBookRecommendationByAuthor = function(req, res) {
     var query = url_parts.query;
     console.log(JSON.stringify(query));
 
-    if (currentState == states.BOOKFOUND && query.name == undefined) {
+    if (currentState == states.BOOKFOUND && query.name == "undefined") {
         msg = 'This Book is written by ' + currentBook.author;
         res.status(200).json(msg);
     } else {
@@ -505,9 +505,9 @@ var searchBookByGenre = (req, res, genre) => {
 }
 
 var clearInfoDict = () => {
-  for(var key in infoDict){
-    infoDict[key] = false;
-  }
+    for (var key in infoDict) {
+        infoDict[key] = false;
+    }
 }
 
 exports.getAnotherBook = (req, res) => {
@@ -563,18 +563,18 @@ exports.getBookRating = function(req, res) {
     infoDict['rating'] = true;
     var count = 0;
 
-    for (var key in infoDict){
-      if(infoDict[key] === false){
-        if(count == 0){
-          msg += ". I can also tell you about its"
+    for (var key in infoDict) {
+        if (infoDict[key] === false) {
+            if (count == 0) {
+                msg += ". I can also tell you about its"
+            }
+            msg = msg + ", " + key;
+            count++;
         }
-        msg = msg + ", " + key;
-        count++;
-      }
     }
 
-    if(count == 2){
-      msg = msg+ ". whenever you are satisfied you can add the book to your reading list."
+    if (count == 2) {
+        msg = msg + ". whenever you are satisfied you can add the book to your reading list."
     }
 
     res.status(200).json(msg);
