@@ -27,6 +27,7 @@ var afterBookRecommend = ["I have info about it's ratings, reviews or summary. W
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
 var bookSummary = ["This book is about %", "A short summary of the book says %", "Summary tells that %"]
+var failureMsg = ["I didn't understand that. Can you say it again?"]
 var states = new Enum(['START', 'BOOKFOUND', 'SRCHBYGENRE', 'SRCHBYAUTHOR', 'BOOKNAMEKNOWN', 'BOOKNAMEUNKNOWN']);
 
 var currentState = states.START;
@@ -449,6 +450,16 @@ exports.finished = (req, res) => {
     setStart();
 }
 
+exports.startOver = (req, res) => {
+  currentState = states.START;
+  currentBook.name = "";
+  currentBook.author = "";
+  currentBook.rating = "";
+  currentBook.genre = "";
+  currentBook.summary = "";
+  res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, do you have a book in mind?');
+}
+
 exports.getBookRating = function(req, res) {
     console.log('book rating intent');
     msg = '';
@@ -517,9 +528,11 @@ exports.noInput = function(req, res) {
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
             msg = afterBookRecommend[randomNumber];
             res.status(200).json(msg);
+        }else {
+          res.status(200).json(failureMsg[0];
         }
     } else {
-        res.status(200).json('I didn\'t understand that. Can you say it again?');
+        res.status(200).json(failureMsg[0]);
     }
 }
 
@@ -563,6 +576,8 @@ exports.yesInput = function(req, res) {
                 randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
                 msg = afterBookRecommend[randomNumber];
                 res.status(200).json(msg);
+            }else{
+              res.status(200).json(failureMsg[0]);
             }
             break;
 
@@ -581,6 +596,9 @@ exports.yesInput = function(req, res) {
             console.log('searchBookByAuthor: authorName ' + param2);
             searchBookByAuthor(req, res, param2);
             break;
+
+        default:
+            res.status(200).json(failureMsg[0]);
     }
 }
 
@@ -622,7 +640,7 @@ var fillBookParams = (bookName) => {
 exports.addToReadingList = (req, res) => {
     readingList.push(currentBook.name);
     console.log("Adding book " + currentBook.name + " to reading list");
-    res.status(200).json('Done. Do you want to search another book or are you finished?');
+    res.status(200).json('Done. Are you finished or do you want to start over?');
 }
 
 exports.getReadingList = (req, res) => {
@@ -653,6 +671,9 @@ exports.catchAll = function(req, res) {
             randomNumber = Math.floor(Math.random() * afterBookRecommend.length);
             msg = afterBookRecommend[randomNumber];
             break;
+
+        default:
+          res.status(200).json(failureMsg[0]);
     }
 
     res.status(200).json(msg);
