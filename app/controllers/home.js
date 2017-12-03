@@ -260,15 +260,15 @@ exports.getSummary = function(req, res) {
             for (var key in infoDict) {
                 if (infoDict[key] === false) {
                     if (count == 0) {
-                        msg += ". I can also tell you about its"
+                        information += ". I can also tell you about its"
                     }
-                    msg = msg + ", " + key;
+                    information = information + ", " + key;
                     count++;
                 }
             }
 
             if (count == 2) {
-                msg = msg + ". whenever you are satisfied you can add the book to your reading list."
+                information = information + ". whenever you are satisfied you can add the book to your reading list."
             }
 
             return res.status(200).json(information);
