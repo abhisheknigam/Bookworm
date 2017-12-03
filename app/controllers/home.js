@@ -168,11 +168,13 @@ exports.recommendMeAbook = function(req, res) {
                 sentence = sentence.replace("%", val)
 
                 information = randomRecommendation['description'];
-                console.log(sentence);
 
-                arr.push(sentence);
+                var randomAppend = afterBookRecommend[Math.floor(Math.random() * afterBookRecommend.length)]
+                console.log(sentence+randomAppend);
 
-                res.status(200).json(arr);
+                arr.push(sentence+randomAppend);
+
+                res.status(200).json(sentence+randomAppend);
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
             }
