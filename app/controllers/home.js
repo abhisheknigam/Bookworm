@@ -319,6 +319,8 @@ exports.getBookRecommendationByAuthor = function(req, res) {
 
     if (currentState == states.BOOKFOUND && query.name == "undefined") {
         msg = 'This Book is written by ' + currentBook.author;
+
+        console.log("Inside Undefined getBookRecommendationByAuthor" + currentBook.author);
         res.status(200).json(msg);
     } else {
         return searchBookByAuthor(req, res, query.name);
@@ -340,6 +342,7 @@ var searchBookByAuthor = (req, res, authorName) => {
         return res.status(200).json('Sure. Can you please name the AUTHOR?');
     }
 
+    console.log("Author Name is " + authorName);
     arr = [];
     url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
 
@@ -822,4 +825,88 @@ function longestCommonSubstring(string1, string2) {
         }
     }
     return longestCommonSubstring;
+}
+
+exports.getBookByName = function(req, res) {
+    clearInfoDict();
+    var url_parts = urll.parse(req.url, true);
+    var query = url_parts.query;
+    console.log(JSON.stringify(query));
+
+    if (currentState == states.BOOKFOUND && query.name == "undefined") {
+        msg = 'This Book is written by ' + currentBook.author;
+        res.status(200).json(msg);
+    } else {
+        return searchBookByName(req, res, query.name);
+    }
+
+
+}
+
+var searchBookByName = (req, res, authorName) => {
+
+    if (authorName === 'undefined') {
+        if (loopCount == 3) {
+            currentState = states.BOOKNAMEUNKNOWN;
+            loopCount = 0;
+            return res.status(200).json("I am sorry, I am having trouble understanding you. Let's start over. Okay, So do you want to search a book by author or by the genre ?");
+        }
+        currentState = states.SRCHBYAUTHOR;
+        loopCount++;
+        return res.status(200).json('Sure. Can you please name the Book again?');
+    }
+
+    arr = [];
+    url = 'https://www.goodreads.com/search/index.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+
+    var options = {
+        url: url + "&q=" + authorName,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+    httpsRequest(options, function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            //var parsedXML = xml.parse(body);
+            var parsedXML = "";
+
+            randomNumber = Math.floor(Math.random() * noBookSpecified.length);
+            var randomRecommendation = noBookSpecified[randomNumber]
+
+            parser.parseString(body, (err, result) => {
+                parsedXML = result;
+                var works = parsedXML.GoodreadsResponse.search[0].results[0].work;
+                books = [];
+                authors = [];
+                ratings = [];
+                if (works != undefined) {
+                    for (var i = 0; i < works.length; i++) {
+                        books.push(works[i].best_book[0].title);
+                        authors.push(works[i].best_book[0].author[0].name);
+                        ratings.push(works[i].average_rating);
+                    }
+                    console.log(books);
+                    randomNumber = Math.floor(Math.random() * books.length);
+
+                    currentBook.name = books[randomNumber];
+                    currentBook.author = authors[randomNumber];
+                    currentBook.rating = ratings[randomNumber];
+
+                    fillBookParams(currentBook.name);
+
+                    randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + ". Would you like to know more ?";
+                    currentState = states.BOOKFOUND;
+                }
+                console.log(randomRecommendation);
+            });
+
+            //Fill rating, summary information of the book
+            fillBookParams(currentBook.name);
+            return res.status(200).json(randomRecommendation);
+        } else {
+            console.log(error)
+            return res.status(200).json("ERROR");
+        }
+    });
 }
