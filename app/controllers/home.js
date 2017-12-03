@@ -171,9 +171,9 @@ exports.recommendMeAbook = function(req, res) {
                 information = randomRecommendation['description'];
 
                 var randomAppend = afterBookRecommend[Math.floor(Math.random() * afterBookRecommend.length)]
-                console.log(sentence+randomAppend);
+                console.log(sentence+". "+randomAppend);
 
-                arr.push(sentence+randomAppend);
+                arr.push(sentence+". "+randomAppend);
 
                 res.status(200).json(sentence+randomAppend);
                 console.log("-----------------Printing Result-----------------------");
