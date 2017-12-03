@@ -541,6 +541,7 @@ exports.finished = (req, res) => {
 }
 
 exports.startOver = (req, res) => {
+    clearInfoDict();
     currentState = states.START;
     currentBook.name = "";
     currentBook.author = "";
