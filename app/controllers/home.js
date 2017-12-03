@@ -50,13 +50,19 @@ var BookInfo = function(nm, aut, rating, genre, summ) {
 
 var currentBook = new BookInfo("", "", "", "", "");
 
-var sendMsg = (msg) => {
+var sendMsg = (res, msg) => {
     repeatSentence = msg;
     res.status(200).json(msg);
 }
 
 // Reading list
 var readingList = [];
+
+exports.repeat = function(req, res) {
+    res.status(200).json(repeatSentence);
+    // return res.status(200).json(msg);
+}
+
 
 exports.getBookTitle = function(req, res) {
     var msg = '';
@@ -68,7 +74,7 @@ exports.getBookTitle = function(req, res) {
         msg = noBookSpecified[randomNumber]
     }
 
-    return sendMsg(msg);
+    return sendMsg(res, msg);
     // return res.status(200).json(msg);
 }
 
@@ -104,7 +110,7 @@ exports.getBestSeller = function(req, res) {
                 }
 
                 currentState == states.BOOKFOUND;
-                sendMsg(arr);
+                sendMsg(res, arr);
                 // res.status(200).json(arr);
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
@@ -141,7 +147,7 @@ exports.getBestSellerByDate = function(req, res) {
                     console.log(val);
                     arr.push(val);
                 }
-                sendMsg(arr);
+                sendMsg(res, arr);
                 // res.status(200).json(arr);
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
@@ -209,7 +215,7 @@ exports.recommendMeAbook = function(req, res) {
                 currentState = states.BOOKFOUND;
                 arr.push(sentence + randomAppend);
 
-                sendMsg(sentence + randomAppend);
+                sendMsg(res, sentence + randomAppend);
                 // res.status(200).json(sentence + randomAppend);
                 console.log("-----------------Printing Result-----------------------");
                 console.log(JSON.stringify(arr));
@@ -247,7 +253,7 @@ exports.getSummary = function(req, res) {
 
         console.log(sentence);
 
-        return sendMsg(sentence);
+        return sendMsg(res, sentence);
         // return res.status(200).json(sentence);
     } else if (currentBook.name != null && currentBook.name != '') {
         arr = [];
@@ -303,13 +309,13 @@ exports.getSummary = function(req, res) {
                 information = information + ". I can add this book to your reading list. Or you can also start a new search."
             }
 
-            return sendMsg(information);
+            return sendMsg(res, information);
         });
     } else {
         randomNumber = Math.floor(Math.random() * noBookSpecified.length);
         var utterance = noBookSpecified[randomNumber]
         console.log('No book specified');
-        return sendMsg(utterance);
+        return sendMsg(res, utterance);
         // return res.status(200).json(utterance);
     }
 }
@@ -343,7 +349,7 @@ exports.getAuthor = function(req, res) {
         msg = msg + ". I can add this book to your reading list. Or you can also start a new search."
     }
 
-    return sendMsg(msg);
+    return sendMsg(res, msg);
 }
 
 exports.getBookRecommendationByAuthor = function(req, res) {
@@ -375,7 +381,7 @@ exports.getBookRecommendationByAuthor = function(req, res) {
         }
 
         console.log("Inside Undefined getBookRecommendationByAuthor" + currentBook.author);
-        sendMsg(msg);
+        sendMsg(res, msg);
         // res.status(200).json(msg);
     } else {
         return searchBookByAuthor(req, res, query.name);
@@ -390,12 +396,12 @@ var searchBookByAuthor = (req, res, authorName) => {
         if (loopCount == 3) {
             currentState = states.BOOKNAMEUNKNOWN;
             loopCount = 0;
-            return sendMsg('I am sorry, I am having trouble understanding you. Let\'s start over. Okay, So do you want to search a book by author or by the genre ?');
+            return sendMsg(res, 'I am sorry, I am having trouble understanding you. Let\'s start over. Okay, So do you want to search a book by author or by the genre ?');
             // return res.status(200).json("I am sorry, I am having trouble understanding you. Let's start over. Okay, So do you want to search a book by author or by the genre ?");
         }
         currentState = states.SRCHBYAUTHOR;
         loopCount++;
-        return sendMsg('Sure. Can you please name the AUTHOR?');
+        return sendMsg(res, 'Sure. Can you please name the AUTHOR?');
         // return res.status(200).json('Sure. Can you please name the AUTHOR?');
     }
 
@@ -447,7 +453,7 @@ var searchBookByAuthor = (req, res, authorName) => {
 
             //Fill rating, summary information of the book
             fillBookParams(currentBook.name);
-            return sendMsg(randomRecommendation);
+            return sendMsg(res, randomRecommendation);
             // return res.status(200).json(randomRecommendation);
         } else {
             console.log(error)
@@ -504,7 +510,7 @@ var searchBookByGenre = (req, res, genre) => {
 
     if (genre === 'undefined') {
         currentState = states.SRCHBYGENRE;
-        return sendMsg('Sure. Which genre\'s book do you prefer?');
+        return sendMsg(res, 'Sure. Which genre\'s book do you prefer?');
         // return res.status(200).json('Sure. Which genre\'s book do you prefer?');
     }
 
@@ -554,7 +560,7 @@ var searchBookByGenre = (req, res, genre) => {
 
                     console.log(msg);
                     console.log("-----------------Printing Book by Genre-----------------------");
-                    sendMsg(msg);
+                    sendMsg(res, msg);
                     // res.status(200).json(msg);
                 }
             } else {
@@ -594,7 +600,7 @@ exports.getAnotherBook = (req, res) => {
         var randomAppend = afterBookRecommend[Math.floor(Math.random() * afterBookRecommend.length)];
         msg = sentence + randomAppend;
     }
-    sendMsg(msg);
+    sendMsg(res, msg);
     // res.status(200).json(msg);
 }
 
@@ -612,7 +618,7 @@ exports.startOver = (req, res) => {
     currentBook.rating = "";
     currentBook.genre = "";
     currentBook.summary = "";
-    sendMsg('Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?')
+    sendMsg(res, 'Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?')
         // res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, What would you like to do?');
 }
 
@@ -645,7 +651,7 @@ exports.getBookRating = function(req, res) {
         msg = msg + ". I can add this book to your reading list. Or you can also start a new search."
     }
 
-    sendMsg(msg);
+    sendMsg(res, msg);
     // res.status(200).json(msg);
 }
 
@@ -869,7 +875,7 @@ function getPosition(string, subString, index) {
 exports.addToReadingList = (req, res) => {
     readingList.push(currentBook.name);
     console.log("Adding book " + currentBook.name + " to reading list");
-    sendMsg('Done. Are you finished or do you want to start over?')
+    sendMsg(res, 'Done. Are you finished or do you want to start over?')
         // res.status(200).json('Done. Are you finished or do you want to start over?');
 }
 
@@ -885,7 +891,7 @@ exports.getReadingList = (req, res) => {
         }
         msg = 'you have ' + msg;
     }
-    sendMsg(msg);
+    sendMsg(res, msg);
     // res.status(200).json(msg);
 }
 
@@ -971,7 +977,7 @@ var searchBookByName = (req, res, authorName) => {
         }
         currentState = states.SRCHBYAUTHOR;
         loopCount++;
-        return sendMsg('Sure. Can you please name the Book again?');
+        return sendMsg(res, 'Sure. Can you please name the Book again?');
         // return res.status(200).json('Sure. Can you please name the Book again?');
     }
 
@@ -1022,7 +1028,7 @@ var searchBookByName = (req, res, authorName) => {
 
             //Fill rating, summary information of the book
             fillBookParams(currentBook.name);
-            return sendMsg(ransomRecommendation);
+            return sendMsg(res, ransomRecommendation);
             // return res.status(200).json(randomRecommendation);
         } else {
             console.log(error)
