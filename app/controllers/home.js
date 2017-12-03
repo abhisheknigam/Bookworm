@@ -454,7 +454,7 @@ exports.startOver = (req, res) => {
   currentBook.rating = "";
   currentBook.genre = "";
   currentBook.summary = "";
-  res.status(200).json('Okay, I can give you general information about a book or I can help you search one. So, do you have a book in mind?');
+  res.status(200).json('Okay, I can give you information about a book or I can recommend you one. So, do you have a book in mind?');
 }
 
 exports.getBookRating = function(req, res) {
