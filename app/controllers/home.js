@@ -23,8 +23,8 @@ var loopCount = 0;
 
 //TODO
 
-var searchBookMessage = ["I can search for books by author, genre. What do I need to search for you?", "I can help you search book by author or genre. What would you like to do ?", "Okay, So do you want to search a book by author or by the genre ?"]
-var noBookSpecified = ["Sorry! I don't have the book's name. Can you tell me a book's name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you taking about again ?']
+var searchBookMessage = ["I can search for books based by author, genre. What do I need to search for you?", "I can help you search book by author or genre. What would you like to do ?", "Okay, So do you want to search a book by author or by the genre ?"]
+var noBookSpecified = ["Sorry! I don't have the book's name. Can you tell me a book's name first ?", 'It seems you didn\'t specify a book. Can you say it again ?', 'Sorry, Which book were you talking about again ?']
 var afterBookRecommend = ["I have info about it's ratings, reviews or summary. What would you like to know?", "Would you like to know more about it's ratings, reviews or summary ?", "How about some information on its rating, summary or reviews ?"];
 var bookAppend = ["I found % on this week's New York Times bestseller list", "The book % is highly rated on good reads", "I think you will love reading  %", " How about % . It is trending this week."]
 var authorName = ["The name of the author is %", "Author's name is %", "% is the author of the book"]
@@ -541,7 +541,7 @@ exports.noInput = function(req, res) {
 
     } else if (currentState == states.BOOKFOUND) {
         console.log('BOOKFOUND STATE')
-        msg = res.status(200).json('Should I add this book to your reading list or I can give you another book? You can also start over a new search');
+        msg = res.status(200).json('Should I add this book to your reading list or, I can give you another book? You can also start over a new search');
     } else if (currentState == states.SRCHBYGENRE) {
         console.log('searchBookByGenre: Genre ' + param3);
         searchBookByGenre(req, res, param3)
