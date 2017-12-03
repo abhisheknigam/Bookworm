@@ -758,13 +758,23 @@ var fillBookParams = (bookName) => {
                 var rex = /(<([^>]+)>)/ig;
                 information = information.replace(rex, "")
 
+                var index = getPosition(information, '.', 3);
+                if (index != -1) {
+                    information = str.substring(1, index);
+                }
+
                 console.log(bookid);
                 console.log(information);
+
                 currentBook.summary = information;
             });
         }
         //      return res.status(200).json(information);
     });
+}
+
+function getPosition(string, subString, index) {
+    return string.split(subString, index).join(subString).length;
 }
 
 exports.addToReadingList = (req, res) => {
