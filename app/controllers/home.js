@@ -216,6 +216,23 @@ exports.getSummary = function(req, res) {
         sentence = bookSummary[Math.floor(Math.random() * bookSummary.length)]
         sentence = sentence.replace("%", information)
 
+        infoDict['summary'] = true;
+        var count = 0;
+
+        for (var key in infoDict) {
+            if (infoDict[key] === false) {
+                if (count == 0) {
+                    sentence += ". I can also tell you about its"
+                }
+                sentence = sentence + ", " + key;
+                count++;
+            }
+        }
+
+        if (count == 2) {
+            sentence = sentence + ". whenever you are satisfied you can add the book to your reading list."
+        }
+
         console.log(sentence);
 
         return res.status(200).json(sentence);
