@@ -414,7 +414,7 @@ var searchBookByAuthor = (req, res, authorName) => {
                     currentBook.author = authors[randomNumber];
                     currentBook.rating = ratings[randomNumber];
 
-                    fillBookParams(currentBook.name);
+                    fillBookParams2(currentBook.name, currentBook.author);
 
                     randomRecommendation = "I found the book " + currentBook.name + " by " + currentBook.author + afterBookRecommend;
                     currentState = states.BOOKFOUND;
@@ -770,6 +770,46 @@ var fillBookParams = (bookName) => {
                 information = parsedXML.GoodreadsResponse.book[0].description[0];
                 currentBook.rating = parsedXML.GoodreadsResponse.book[0].average_rating[0];
                 currentBook.author = parsedXML.GoodreadsResponse.book[0].authors[0].author[0].name[0];
+                information = information.replace('//<![CDATA[', '');
+                information = information.replace('//]]>', '');
+                var rex = /(<([^>]+)>)/ig;
+                information = information.replace(rex, "")
+
+                var index = getPosition(information, '.', 3);
+                if (index != -1) {
+                    information = information.substring(1, index);
+                }
+
+                console.log(bookid);
+                console.log(information);
+
+                currentBook.summary = information;
+            });
+        }
+        //      return res.status(200).json(information);
+    });
+}
+
+// get all the information about the book.
+var fillBookParams2 = (bookName, authorName) => {
+    url = 'https://www.goodreads.com/book/title.xml?key=ubbbkDQlV14HzjTnWaD3rQ';
+    var options = {
+        url: url + "&title=" + bookName,
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    httpsRequest(options, function callback(error, response, body) {
+        if (response.statusCode == 200) {
+            var parsedXML = "";
+            var randomRecommendation = "No book found";
+            parser.parseString(body, (err, result) => {
+                parsedXML = result;
+                bookid = parsedXML.GoodreadsResponse.book[0].id[0];
+                information = parsedXML.GoodreadsResponse.book[0].description[0];
+                currentBook.rating = parsedXML.GoodreadsResponse.book[0].average_rating[0];
                 information = information.replace('//<![CDATA[', '');
                 information = information.replace('//]]>', '');
                 var rex = /(<([^>]+)>)/ig;
